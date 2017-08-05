@@ -11,13 +11,13 @@
     "cors": "^2.8.4",
     "debug": "~2.6.3",
     "dotenv": "^4.0.0",
-<<<<<<< HEAD
+
     "express": "~4.15.2",
-=======
+
     "express": "^4.15.3",
     "hbs": "~4.0.1",
     "jsonwebtoken": "^7.4.2",
->>>>>>> edbranch
+
     "knex": "^0.13.0",
     "pg": "^7.1.0",
     "serve-favicon": "~2.4.2"
