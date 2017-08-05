@@ -31,12 +31,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 //maybe delete this
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 //mount the router
-
-app.use('/api/v1/users', persons);
+app.use('/api/v1/persons', persons);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
