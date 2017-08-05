@@ -4,8 +4,8 @@ const queries = require('../db/queries')
 
 
 router.get('/', (req, res) => {
-  queries.getAll().then(users=> {
-    res.json(users)
+  queries.getAll().then(persons=> {
+    res.json(persons)
   })
 });
 

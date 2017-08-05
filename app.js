@@ -1,14 +1,13 @@
-
-var express = require('express');
-var path = require('path');
+const express = require('express');
+const path = require('path');
 // var favicon = require('serve-favicon');
 // var logger = require('morgan');
 // var cookieParser = require('cookie-parser');
 // var handlebars = require('hbs')
-var bodyParser = require('body-parser');
-var index = require('./routes/index');
-var users = require('./routes/users');
-var app = express();
+const bodyParser = require('body-parser');
+const index = require('./routes/index');
+const users = require('./routes/users');
+const app = express();
 const cors = require('cors');
 const express = require('express');
 const path = require('path');
@@ -41,7 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //mount the router
 
-app.use('/api/v1/users', users);
+app.use('/api/v1/users', persons);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
