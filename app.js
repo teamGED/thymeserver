@@ -9,16 +9,12 @@ const index = require('./routes/index');
 const users = require('./routes/users');
 const app = express();
 const cors = require('cors');
-const express = require('express');
-const path = require('path');
 const logger = require('morgan');
 const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser');
 
 
-const app = express
 
-const users = require('./api/users')
+const persons = require('./api/persons');
 
 
 // view engine setup
