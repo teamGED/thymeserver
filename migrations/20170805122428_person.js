@@ -1,6 +1,6 @@
 
 exports.up = function(knex, Promise) {
-  return knex.schema.createTable("user", (table) => {
+  return knex.schema.createTable('person', (table) => {
     table.increments();
     table.boolean('is_seller').defaultTo('false');
     table.string('email').notNullable();
@@ -12,5 +12,5 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTableIfExists("user")
+  return knex.schema.dropTableIfExists('person')
 };
