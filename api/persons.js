@@ -25,6 +25,7 @@ function validBuyer(person) {
   person.password.trim() !== '' &&
   person.password.trim().length >=6;
   const validName = typeof person.name == 'string' && person.name.trim() !== '';
+  const validLocation = typeof person.address == 'string' && person.address.trim() !== '';
   return validEmail && validPassword && validName && validLocation;
 }
 
@@ -42,46 +43,59 @@ router.get('/names', (req, res) => {
   })
 });
 
-router.get('/:name', (req, res) => {
-  queries.getItemId(req.params.name)
+router.get('/item', (req, res) => {
+  queries.getItemId(req.body.name)
   .then(id => {
     res.json(id)
   })
 });
 
 router.post('/signup', (req, res, next)=> {
-  if (validBuyer(req.body)){
-    var hash  = bcrypt.hashSync(req.body.password)
+  queries.checkEmail(req.body.email)
+  .then(person => {
+    if (person.length === 0) {
+  const is_seller = req.body.seller;
+  console.log(is_seller)
+  if (is_seller == false && validBuyer(req.body)) {
+    var hash  = bcrypt.hashSync(req.body.password, 8)
     const person = {
       is_seller: req.body.seller,
       name: req.body.name,
       email:req.body.email,
-      password: hash,
-      address: req.body.address
+      password: hash
     }
-  }
-  if(validSeller(req.body)){
+  } else if (is_seller == true && validSeller(req.body)) {
     var hash = bcrypt.hashSync(req.body.password, 8)
     const person = {
       is_seller: req.body.seller,
       name: req.body.name,
       email:req.body.email,
       password: hash,
-      address: req.body.address
+      address: req.body.address,
+      item_id: req.body.item
     }
     console.log(person)
     queries.create(person)
-    // .returning('*')
+    .returning('*')
     .then(person => {
       res.json(person);
     })
-  } else {
-    res.status(500)
-    res.json({
-      message: 'Invalid User'
-    })
   }
+} else {
+  res.json({message: "Email already in use, try logging in"})
+}
+});
 })
+
+router.delete('/:id', (req, res) => {
+  let id = req.params.id;
+  let drop = req.body;
+  queries.deletePerson(id).del(drop)
+  .returning('*')
+  .then(person => {
+    res.json(person);
+  })
+});
 
 
 module.exports = router;

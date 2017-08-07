@@ -20,6 +20,10 @@ module.exports = {
     .select('item.id')
     .where('name', name);
   },
+  checkEmail(email) {
+    return knex('person')
+    .where('email', email)
+  },
   create(person) {
     return knex('person')
     .insert(person);
@@ -29,7 +33,7 @@ module.exports = {
     .where('id', id)
     .update(person, 'id')
   },
-  delete(id) {
+  deletePerson(id) {
     return knex('person')
     .where('id', id)
     .del();
