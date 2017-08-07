@@ -38,9 +38,9 @@ module.exports = {
     .where('id', id)
     .del();
   },
-  deleteItem(id){
-    return knex('item_id')
+  updateItem(id, item){
+    return knex('person')
     .where('id', id)
-    .del()
+    .update('item_id', item)
   }
 }
