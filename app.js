@@ -5,7 +5,7 @@ const app = express();
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-const port = process.env.PORT  || 8080;
+// const port = process.env.PORT  || 8080;
 
 const persons = require('./api/persons');
 
@@ -33,6 +33,6 @@ app.use(function(err, req, res, next) {
   })
 });
 
-app.listen(port)
+// app.listen(port)
 
 module.exports = app;
