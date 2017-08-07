@@ -29,7 +29,7 @@ exports.seed = function(knex, Promise) {
         { id: 23, name: 'radiashes' },
         { id: 24, name: 'rhubarb' },
         { id: 25, name: 'squash' },
-        { id: 27, name: 'tomatos' },
+        { id: 27, name: 'tomatoes' },
         { id: 28, name: 'corn' },
         { id: 29, name: 'fennel' }
 
