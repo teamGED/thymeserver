@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const queries = require('../db/queries');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt')
 
 function isValidId (req, res, next) {
   if (!isNaN(eq.params.id)) return next();
@@ -27,7 +28,14 @@ function validBuyer(person) {
   return validEmail && validPassword && validName && validLocation;
 }
 
-router.get('/', (req, res) => {
+router.get('/', (req, res)=> {
+  queries.getAll()
+  .then(person => {
+    res.json(person)
+  })
+})
+
+router.get('/names', (req, res) => {
   queries.getNames()
   .then(names => {
   res.json(names)
@@ -41,8 +49,7 @@ router.get('/:name', (req, res) => {
   })
 });
 
-router.post('/', (req, res, next)=> {
-  console.log(req.body)
+router.post('/signup', (req, res, next)=> {
   if (validBuyer(req.body)){
     var hash  = bcrypt.hashSync(req.body.password)
     const person = {
@@ -54,7 +61,7 @@ router.post('/', (req, res, next)=> {
     }
   }
   if(validSeller(req.body)){
-    var hash = bcrypt.hashSync(req.body.password)
+    var hash = bcrypt.hashSync(req.body.password, 8)
     const person = {
       is_seller: req.body.seller,
       name: req.body.name,
@@ -62,11 +69,11 @@ router.post('/', (req, res, next)=> {
       password: hash,
       address: req.body.address
     }
+    console.log(person)
     queries.create(person)
-    .then(id => {
-      res.json({
-        id:id[0]
-      });
+    // .returning('*')
+    .then(person => {
+      res.json(person);
     })
   } else {
     res.status(500)
