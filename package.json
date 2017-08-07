@@ -16,10 +16,11 @@
     "hbs": "~4.0.1",
     "jsonwebtoken": "^7.4.2",
     "knex": "^0.13.0",
+    "normalize-port": "^1.0.0",
     "pg": "^7.1.0",
     "serve-favicon": "~2.4.2"
   },
-  "main": "app.js",
+
   "devDependencies": {},
   "repository": {
     "type": "git",
