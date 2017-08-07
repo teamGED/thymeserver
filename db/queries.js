@@ -11,7 +11,7 @@ module.exports = {
   },
   getNames() {
     return knex('item').from('item')
-    .select('item.name as item_name', 'person.name as person_name')
+    .select('item.name as item_name', 'person.name as person_name', 'person.address as address', 'person.is_seller as seller')
     .join('person', 'item.id', 'person.item_id')
     // .first();
   },
