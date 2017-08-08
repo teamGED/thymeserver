@@ -4,11 +4,6 @@ module.exports = {
   getAll() {
     return knex('*').from('person');
   },
-  getOnePerson(id) {
-    return knex('person')
-    .where('id', id)
-    .first()
-  },
   getNames() {
     return knex('item').from('item')
     .select('item.name as item_name', 'person.name as person_name', 'person.address as address', 'person.is_seller as seller')
@@ -26,7 +21,17 @@ module.exports = {
   },
   create(person) {
     return knex('person')
-    .insert(person);
+    .insert(person)
+    .returning('*');
+  },
+  sellerLogin(email) {
+    return knex('person')
+    .select('*')
+    .where('email', email)
+  },
+  getSellerById(id){
+    return knex('person')
+    .where('id', id)
   },
   update(id, person) {
     return knex('person')

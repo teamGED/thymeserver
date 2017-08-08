@@ -2,97 +2,153 @@ const express = require('express');
 const router = express.Router();
 const queries = require('../db/queries');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
 
-function isValidId (req, res, next) {
+require('dotenv').config()
+
+function isValidId(req, res, next) {
   if (!isNaN(eq.params.id)) return next();
   next(new Error('Invalid Id'));
 }
 
 function validSeller(person) {
-  const validEmail= typeof person.email == 'string' && person.email.trim() !== '';
+  const validEmail = typeof person.email == 'string' && person.email.trim() !== '';
   const validPassword = typeof person.password == 'string' &&
-  person.password.trim() !== '' &&
-  person.password.trim().length >=6;
+    person.password.trim() !== '' &&
+    person.password.trim().length >= 6;
   const validName = typeof person.name == 'string' && person.name.trim() !== '';
   const validLocation = typeof person.address == 'string' && person.address.trim() !== '';
   return validEmail && validPassword && validName && validLocation;
 }
 
 function validBuyer(person) {
-  const validEmail= typeof person.email == 'string' && person.email.trim() !== '';
+  const validEmail = typeof person.email == 'string' && person.email.trim() !== '';
   const validPassword = typeof person.password == 'string' &&
-  person.password.trim() !== '' &&
-  person.password.trim().length >=6;
+    person.password.trim() !== '' &&
+    person.password.trim().length >= 6;
   const validName = typeof person.name == 'string' && person.name.trim() !== '';
   const validLocation = typeof person.address == 'string' && person.address.trim() !== '';
   return validEmail && validPassword && validName && validLocation;
 }
 
-router.get('/', (req, res)=> {
+router.get('/', (req, res) => {
   queries.getAll()
-  .then(person => {
-    res.json(person)
-  })
+    .then(person => {
+      res.json(person)
+    })
 })
 
 router.get('/names', (req, res) => {
   queries.getNames()
-  .then(names => {
-  res.json(names)
-  })
+    .then(names => {
+      res.json(names)
+    })
 });
 
 router.get('/item', (req, res) => {
   queries.getItemId(req.body.name)
-  .then(id => {
-    res.json(id)
-  })
+    .then(id => {
+      res.json(id)
+    })
 });
 
-router.post('/signup', (req, res, next)=> {
+router.post('/login', (req, res) => {
+
+})
+
+router.post('/buyer/signup', (req, res, next) => {
   queries.checkEmail(req.body.email)
-  .then(person => {
-    if (person.length === 0) {
-  const is_seller = req.body.seller;
-  if (is_seller == false && validBuyer(req.body)) {
-    var hash  = bcrypt.hashSync(req.body.password, 8)
-    const person = {
-      is_seller: req.body.seller,
-      name: req.body.name,
-      email:req.body.email,
-      password: hash
-    }
-  } else if (is_seller == true && validSeller(req.body)) {
-    var hash = bcrypt.hashSync(req.body.password, 8)
-    const person = {
-      is_seller: req.body.seller,
-      name: req.body.name,
-      email:req.body.email,
-      password: hash,
-      address: req.body.address,
-      item_id: req.body.item
-    }
-    queries.create(person)
-    .returning('*')
     .then(person => {
-      res.json(person);
+      if (person.length === 0) {
+        // const is_seller = req.body.seller;
+        if (validBuyer(req.body)) {
+          var hash = bcrypt.hashSync(req.body.password, 8)
+          var buyer = {
+            is_seller: req.body.seller,
+            name: req.body.name,
+            email: req.body.email,
+            password: hash
+          }
+          queries.create(buyer)
+            .then(user => {
+              let token = jwt.sign(user[0], process.env.TOKEN_SECRET)
+              res.json({
+                token
+              })
+            })
+        }
+      } else {
+        res.json({
+          error: "Email already exists, try logging in!"
+        })
+      }
+    })
+})
+
+router.post('/seller/signup', (req, res, next) => {
+  queries.checkEmail(req.body.email)
+    .then(person => {
+      if (person.length === 0) {
+        // const is_seller = req.body.seller;
+        if (validSeller(req.body)) {
+          var hash = bcrypt.hashSync(req.body.password, 8)
+          const seller = {
+            is_seller: req.body.seller,
+            name: req.body.name,
+            email: req.body.email,
+            password: hash,
+            address: req.body.address,
+            item_id: req.body.item
+          }
+          queries.create(seller)
+            .then(user => {
+              var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
+              res.json({
+                token
+              })
+            })
+        }
+      } else {
+        res.json({
+          error: "Email already exists, try logging in!"
+        })
+      }
+    })
+})
+
+router.get('/:id/profile', (req, res) => {
+  console.log('token ', req.headers.authorization)
+  if (req.headers.authorization) {
+    const token = req.headers.authorization.substring(7)
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
+    if (decoded.id == req.params.id) {
+      queries.getSellerById(req.params.id).then(info => {
+        res.json(info)
+        console.log(info);
+      })
+    } else {
+      res.status(401)
+      res.json({
+        error: 'unauthorized'
+      })
+    }
+  } else {
+    res.status(401)
+    res.json({
+      error: 'unauthorized'
     })
   }
-} else {
-  res.json({message: "Email already in use, try logging in"})
-}
 });
-})
 
 router.delete('/:id', (req, res) => {
   let id = req.params.id;
   let drop = req.body;
   queries.deletePerson(id).del(drop)
-  .returning('*')
-  .then(person => {
-    res.json(person);
-  })
+    .returning('*')
+    .then(person => {
+      res.json(person);
+    })
 });
 
 router.put('/:user_id/:item_id', (req, res) => {

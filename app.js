@@ -15,6 +15,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Headers', 'Authorization');
+  next();
+});
 //mount the router
 app.use('/api/v1/persons', persons);
 // catch 404 and forward to error handler
