@@ -24,7 +24,7 @@ module.exports = {
     .insert(person)
     .returning('*');
   },
-  sellerLogin(email) {
+  personLogin(email) {
     return knex('person')
     .select('*')
     .where('email', email)

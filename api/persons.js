@@ -3,7 +3,7 @@ const router = express.Router();
 const queries = require('../db/queries');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config()
 
@@ -53,9 +53,6 @@ router.get('/item', (req, res) => {
     })
 });
 
-router.post('/login', (req, res) => {
-
-})
 
 router.post('/buyer/signup', (req, res, next) => {
   queries.checkEmail(req.body.email)
@@ -85,6 +82,27 @@ router.post('/buyer/signup', (req, res, next) => {
       }
     })
 })
+
+router.post('/login', function(req, res, next) {
+  queries.personLogin(req.body.email)
+  .then(user => {
+    if (user.length === 0) {
+      res.json({error: 'Email / password incorrect'})
+    } else {
+      var seller = user[0].is_seller
+      console.log(seller)
+      var match = brcrypt.compare(req.body.password, user[0].password)
+      if (match){
+        delete user[0].password
+        var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
+        res.json(token)
+      } else {
+        res.json({error: "Email / Password do not match"});
+      }
+    }
+  });
+  res.json({message: 'login successful'});
+});
 
 router.post('/seller/signup', (req, res, next) => {
   queries.checkEmail(req.body.email)
@@ -116,16 +134,21 @@ router.post('/seller/signup', (req, res, next) => {
       }
     })
 })
-
+// if is_seller is true get id and redirect to seller profile if false redirect to explore
 router.get('/:id/profile', (req, res) => {
   console.log('token ', req.headers.authorization)
   if (req.headers.authorization) {
     const token = req.headers.authorization.substring(7)
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
-    if (decoded.id == req.params.id) {
+    const seller = decoded.is_seller
+    if (decoded.id == req.params.id && seller) {
       queries.getSellerById(req.params.id).then(info => {
         res.json(info)
         console.log(info);
+    })
+  } else if (decoded.id == req.params.id && !seller) {
+      queries.getBuyerById(req.params.id).then(info => {
+        res.json(info)
       })
     } else {
       res.status(401)
@@ -133,11 +156,13 @@ router.get('/:id/profile', (req, res) => {
         error: 'unauthorized'
       })
     }
+    //^ unauthorized because tokens dont match
   } else {
     res.status(401)
     res.json({
       error: 'unauthorized'
     })
+    //^ unauthorized because no header
   }
 });
 
@@ -159,4 +184,4 @@ router.put('/:user/:item', (req, res) => {
   .then(data => res.json(data))
 })
 
-module.exports = router;
+module.exports = router
