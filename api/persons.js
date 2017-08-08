@@ -55,7 +55,6 @@ router.post('/signup', (req, res, next)=> {
   .then(person => {
     if (person.length === 0) {
   const is_seller = req.body.seller;
-  console.log(is_seller)
   if (is_seller == false && validBuyer(req.body)) {
     var hash  = bcrypt.hashSync(req.body.password, 8)
     const person = {
@@ -74,7 +73,6 @@ router.post('/signup', (req, res, next)=> {
       address: req.body.address,
       item_id: req.body.item
     }
-    console.log(person)
     queries.create(person)
     .returning('*')
     .then(person => {
@@ -97,9 +95,9 @@ router.delete('/:id', (req, res) => {
   })
 });
 
-router.put('/:user/:item', (req, res) => {
-  let user = req.params.user
-  let item = req.params.item
+router.put('/:user_id/:item_id', (req, res) => {
+  let user = req.params.user_id
+  let item = req.params.item_id
   queries.updateItem(user, item)
   .returning('*')
   .then(data => res.json(data))
