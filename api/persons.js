@@ -54,6 +54,7 @@ router.get('/item', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
+<<<<<<< HEAD
   console.log(req.body);
   queries.checkEmail(req.body.email)
   .then(user => {
@@ -72,6 +73,9 @@ router.post('/login', (req, res) => {
     }
   })
   res.json({message: 'login sucessful'})
+=======
+
+>>>>>>> b0b0880e9741b7a97907c4f49dd065c5affbfe7a
 })
 
 router.post('/buyer/signup', (req, res, next) => {
@@ -168,9 +172,15 @@ router.delete('/:id', (req, res) => {
     })
 });
 
+<<<<<<< HEAD
 router.put('/:user/:item', (req, res) => {
   let user = req.params.user
   let item = req.params.item
+=======
+router.put('/:user_id/:item_id', (req, res) => {
+  let user = req.params.user_id
+  let item = req.params.item_id
+>>>>>>> b0b0880e9741b7a97907c4f49dd065c5affbfe7a
   queries.updateItem(user, item)
   .returning('*')
   .then(data => res.json(data))
