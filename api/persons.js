@@ -151,5 +151,12 @@ router.delete('/:id', (req, res) => {
     })
 });
 
+router.put('/:user/:item', (req, res) => {
+  let user = req.params.user
+  let item = req.params.item
+  queries.updateItem(user, item)
+  .returning('*')
+  .then(data => res.json(data))
+})
 
 module.exports = router;

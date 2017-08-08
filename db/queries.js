@@ -6,7 +6,7 @@ module.exports = {
   },
   getNames() {
     return knex('item').from('item')
-    .select('item.name as item_name', 'person.name as person_name')
+    .select('item.name as item_name', 'person.name as person_name', 'person.address as address', 'person.is_seller as seller')
     .join('person', 'item.id', 'person.item_id')
     // .first();
   },
@@ -43,9 +43,9 @@ module.exports = {
     .where('id', id)
     .del();
   },
-  deleteItem(id){
-    return knex('item_id')
+  updateItem(id, item){
+    return knex('person')
     .where('id', id)
-    .del()
+    .update('item_id', item)
   }
 }
