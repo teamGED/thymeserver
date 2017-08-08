@@ -53,6 +53,26 @@ router.get('/item', (req, res) => {
     })
 });
 
+router.post('/login', (req, res) => {
+  console.log(req.body);
+  queries.checkEmail(req.body.email)
+  .then(user => {
+    if (user.length === 0) {
+      res.json ({ error: 'E-mail or password did not match'})
+    } else {
+      var match = bcrypt.compareSync(user[0].password, req.body.password)
+      console.log(match, req.body.password, user[0].password);
+      if (match) {
+        delete user[0].password
+        var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
+        res.json({ data: token})
+      } else {
+        res.json({ error: 'E-mail or password did not match'})
+      }
+    }
+  })
+  res.json({message: 'login sucessful'})
+})
 
 router.post('/buyer/signup', (req, res, next) => {
   queries.checkEmail(req.body.email)
@@ -176,9 +196,9 @@ router.delete('/:id', (req, res) => {
     })
 });
 
-router.put('/:user/:item', (req, res) => {
-  let user = req.params.user
-  let item = req.params.item
+router.put('/:user_id/:item_id', (req, res) => {
+  let user = req.params.user_id
+  let item = req.params.item_id
   queries.updateItem(user, item)
   .returning('*')
   .then(data => res.json(data))
