@@ -54,74 +54,25 @@ router.get('/item', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  console.log(req.body);
   queries.checkEmail(req.body.email)
   .then(user => {
     if (user.length === 0) {
       res.json ({ error: 'E-mail or password did not match'})
     } else {
-      var match = bcrypt.compareSync(user[0].password, req.body.password)
-      console.log(match, req.body.password, user[0].password);
-      if (match) {
+      var seller = user[0].is_seller
+      var match = bcrypt.compareSync(req.body.password, user[0].password)
+      console.log(match, seller)
+      if (match == true && seller == true) {
         delete user[0].password
+        console.log(user[0]);
         var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
-        res.json({ data: token})
+        console.log(token)
+        res.json({data: token})
       } else {
         res.json({ error: 'E-mail or password did not match'})
       }
     }
-  })
-  res.json({message: 'login sucessful'})
-})
-
-router.post('/buyer/signup', (req, res, next) => {
-  queries.checkEmail(req.body.email)
-    .then(person => {
-      if (person.length === 0) {
-        // const is_seller = req.body.seller;
-        if (validBuyer(req.body)) {
-          var hash = bcrypt.hashSync(req.body.password, 8)
-          var buyer = {
-            is_seller: req.body.seller,
-            name: req.body.name,
-            email: req.body.email,
-            password: hash
-          }
-          queries.create(buyer)
-            .then(user => {
-              let token = jwt.sign(user[0], process.env.TOKEN_SECRET)
-              res.json({
-                token
-              })
-            })
-        }
-      } else {
-        res.json({
-          error: "Email already exists, try logging in!"
-        })
-      }
-    })
-})
-
-router.post('/login', function(req, res, next) {
-  queries.personLogin(req.body.email)
-  .then(user => {
-    if (user.length === 0) {
-      res.json({error: 'Email / password incorrect'})
-    } else {
-      var seller = user[0].is_seller
-      console.log(seller)
-      var match = brcrypt.compare(req.body.password, user[0].password)
-      if (match){
-        delete user[0].password
-        var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
-        res.json(token)
-      } else {
-        res.json({error: "Email / Password do not match"});
-      }
-    }
   });
-  res.json({message: 'login successful'});
 });
 
 router.post('/seller/signup', (req, res, next) => {
@@ -156,7 +107,6 @@ router.post('/seller/signup', (req, res, next) => {
 })
 // if is_seller is true get id and redirect to seller profile if false redirect to explore
 router.get('/:id/profile', (req, res) => {
-  console.log('token ', req.headers.authorization)
   if (req.headers.authorization) {
     const token = req.headers.authorization.substring(7)
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
@@ -164,7 +114,6 @@ router.get('/:id/profile', (req, res) => {
     if (decoded.id == req.params.id && seller) {
       queries.getSellerById(req.params.id).then(info => {
         res.json(info)
-        console.log(info);
     })
   } else if (decoded.id == req.params.id && !seller) {
       queries.getBuyerById(req.params.id).then(info => {
