@@ -136,6 +136,7 @@ router.get('/:id/profile', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     let id = req.params.id;
+    console.log(id);
     let drop = req.body;
     queries.deletePerson(id).del(drop)
         .returning('*')
