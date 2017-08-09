@@ -56,7 +56,7 @@ router.get('/item', (req, res) => {
 router.post('/login', (req, res) => {
     queries.checkEmail(req.body.email)
         .then(user => {
-            if (!user.length) {
+            if (user.length === 0) {
                 res.json({ error: 'E-mail or password did not match' })
             } else {
                 var seller = user[0].is_seller
@@ -64,9 +64,7 @@ router.post('/login', (req, res) => {
                 console.log(match, seller)
                 if (match && seller) {
                     delete user[0].password
-                    console.log(user[0]);
                     var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
-                    console.log(jwt.sign(user[0], process.env.TOKEN_SECRET))
                     res.json({ data: token })
                 } else {
                     res.json({ error: 'E-mail or password did not match' })
@@ -77,36 +75,36 @@ router.post('/login', (req, res) => {
 
 router.post('/seller/signup', (req, res, next) => {
 
-        queries.checkEmail(req.body.email)
-            .then(person => {
-                if (!person.length) {
-                    // const is_seller = req.body.seller;
-                    if (validSeller(req.body)) {
-                        var hash = bcrypt.hashSync(req.body.password, 8)
-                        const seller = {
-                            is_seller: req.body.seller,
-                            name: req.body.name,
-                            email: req.body.email,
-                            password: hash,
-                            address: req.body.address,
-                            item_id: req.body.item
-                        }
-                        queries.create(seller)
-                            .then(user => {
-                                var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
-                                res.json({
-                                    token
-                                })
-                            })
+    queries.checkEmail(req.body.email)
+        .then(person => {
+            if (person.length === 0) {
+                // const is_seller = req.body.seller;
+                if (validSeller(req.body)) {
+                    var hash = bcrypt.hashSync(req.body.password, 8)
+                    const seller = {
+                        is_seller: req.body.seller,
+                        name: req.body.name,
+                        email: req.body.email,
+                        password: hash,
+                        address: req.body.address,
+                        item_id: req.body.item
                     }
-                } else {
-                    res.json({
-                        error: "Email already exists, try logging in!"
-                    })
+                    queries.create(seller)
+                        .then(user => {
+                            var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
+                            res.json({
+                                token
+                            })
+                        })
                 }
-            });
-    });
-    // if is_seller is true get id and redirect to seller profile if false redirect to explore
+            } else {
+                res.json({
+                    error: "Email already exists, try logging in!"
+                })
+            }
+        });
+});
+// if is_seller is true get id and redirect to seller profile if false redirect to explore
 router.get('/:id/profile', (req, res) => {
     if (req.headers.authorization) {
         const token = req.headers.authorization.substring(7)
@@ -129,8 +127,8 @@ router.get('/:id/profile', (req, res) => {
     } else {
         res.status(401)
         res.json({
-                error: 'unauthorized'
-            })
+            error: 'unauthorized'
+        })
     }
 });
 
