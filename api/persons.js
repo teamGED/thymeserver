@@ -56,7 +56,7 @@ router.get('/item', (req, res) => {
 router.post('/login', (req, res) => {
     queries.checkEmail(req.body.email)
         .then(user => {
-            if (user.length === 0) {
+            if (!user.length) {
                 res.json({ error: 'E-mail or password did not match' })
             } else {
                 var seller = user[0].is_seller
@@ -78,7 +78,7 @@ router.post('/login', (req, res) => {
 router.post('/seller/signup', (req, res, next) => {
         queries.checkEmail(req.body.email)
             .then(person => {
-                if (person.length === 0) {
+                if (!person.length) {
                     // const is_seller = req.body.seller;
                     if (validSeller(req.body)) {
                         var hash = bcrypt.hashSync(req.body.password, 8)
