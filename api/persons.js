@@ -132,13 +132,8 @@ router.get('/:id/profile', (req, res) => {
                 error: 'unauthorized'
             })
             //^ unauthorized because no header
+
     }
-} else {
-    res.status(401)
-    res.json({
-        error: 'unauthorized'
-    })
-}
 });
 
 router.delete('/:id', (req, res) => {
