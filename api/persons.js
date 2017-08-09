@@ -13,29 +13,10 @@ function isValidId(req, res, next) {
 }
 
 function validSeller(person) {
-<<<<<<< HEAD
-  const validEmail = typeof person.email == 'string' && person.email.trim() !== '';
-  const validPassword = typeof person.password == 'string' &&
-    person.password.trim() !== '' &&
-    person.password.trim().length >= 2;
-  const validName = typeof person.name == 'string' && person.name.trim() !== '';
-  const validLocation = typeof person.address == 'string' && person.address.trim() !== '';
-  return validEmail && validPassword && validName && validLocation;
-}
-
-function validBuyer(person) {
-  const validEmail = typeof person.email == 'string' && person.email.trim() !== '';
-  const validPassword = typeof person.password == 'string' &&
-    person.password.trim() !== '' &&
-    person.password.trim().length >= 2;
-  const validName = typeof person.name == 'string' && person.name.trim() !== '';
-  const validLocation = typeof person.address == 'string' && person.address.trim() !== '';
-  return validEmail && validPassword && validName && validLocation;
-=======
     const validEmail = typeof person.email == 'string' && person.email.trim() !== '';
     const validPassword = typeof person.password == 'string' &&
         person.password.trim() !== '' &&
-        person.password.trim().length >= 6;
+        person.password.trim().length >= 2;
     const validName = typeof person.name == 'string' && person.name.trim() !== '';
     const validLocation = typeof person.address == 'string' && person.address.trim() !== '';
     return validEmail && validPassword && validName && validLocation;
@@ -45,11 +26,10 @@ function validBuyer(person) {
     const validEmail = typeof person.email == 'string' && person.email.trim() !== '';
     const validPassword = typeof person.password == 'string' &&
         person.password.trim() !== '' &&
-        person.password.trim().length >= 6;
+        person.password.trim().length >= 2;
     const validName = typeof person.name == 'string' && person.name.trim() !== '';
     const validLocation = typeof person.address == 'string' && person.address.trim() !== '';
     return validEmail && validPassword && validName && validLocation;
->>>>>>> ty
 }
 
 router.get('/', (req, res) => {
@@ -74,24 +54,6 @@ router.get('/item', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-<<<<<<< HEAD
-  queries.checkEmail(req.body.email)
-  .then(user => {
-    if (user.length === 0) {
-      res.json ({ error: 'E-mail or password did not match'})
-    } else {
-      var seller = user[0].is_seller
-      var match = bcrypt.compareSync(req.body.password, user[0].password)
-      if (match == true && seller == true) {
-        delete user[0].password
-        var token = jwt.sign(user[0], process.env.TOKEN_SECRET)
-        res.json({data: token})
-      } else {
-        res.json({ error: 'E-mail or password did not match'})
-      }
-    }
-  });
-=======
     queries.checkEmail(req.body.email)
         .then(user => {
             if (!user.length) {
@@ -111,7 +73,6 @@ router.post('/login', (req, res) => {
                 }
             }
         });
->>>>>>> ty
 });
 
 router.post('/seller/signup', (req, res, next) => {
@@ -172,15 +133,12 @@ router.get('/:id/profile', (req, res) => {
             })
             //^ unauthorized because no header
     }
-<<<<<<< HEAD
-  } else {
+} else {
     res.status(401)
     res.json({
-      error: 'unauthorized'
+        error: 'unauthorized'
     })
-  }
-=======
->>>>>>> ty
+}
 });
 
 router.delete('/:id', (req, res) => {
