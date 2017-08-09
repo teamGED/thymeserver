@@ -76,7 +76,6 @@ router.post('/seller/signup', (req, res, next) => {
   queries.checkEmail(req.body.email)
     .then(person => {
       if (person.length === 0) {
-        // const is_seller = req.body.seller;
         if (validSeller(req.body)) {
           var hash = bcrypt.hashSync(req.body.password, 8)
           const seller = {
@@ -101,8 +100,8 @@ router.post('/seller/signup', (req, res, next) => {
         })
       }
     })
-})
-// if is_seller is true get id and redirect to seller profile if false redirect to explore
+});
+
 router.get('/:id/profile', (req, res) => {
   if (req.headers.authorization) {
     const token = req.headers.authorization.substring(7)
@@ -110,11 +109,11 @@ router.get('/:id/profile', (req, res) => {
     const seller = decoded.is_seller
     if (decoded.id == req.params.id && seller) {
       queries.getSellerById(req.params.id).then(info => {
-        res.json(info)
+        res.json({info})
     })
   } else if (decoded.id == req.params.id && !seller) {
       queries.getBuyerById(req.params.id).then(info => {
-        res.json(info)
+        res.json({info})
       })
     } else {
       res.status(401)
@@ -127,7 +126,7 @@ router.get('/:id/profile', (req, res) => {
     res.json({
       error: 'unauthorized'
     })
-  }
+  };
 });
 
 router.delete('/:id', (req, res) => {
